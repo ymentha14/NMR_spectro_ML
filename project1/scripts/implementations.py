@@ -5,42 +5,14 @@ Machine Learning (CS-433)
 '''
 
 
-# - IMPORTS - #
+### - IMPORTS - ###
 import numpy as np
+import matplotlib.pyplot as plt
+from proj1_helpers import *
 
 
-# - FUNCTIONS - #
-def split_dataset(y, x):
-    """Split the dataset into subsets, each subset containing all datapoints that have the same value for 
-       the categorical feature PRI_jet_num. The function returns each subset and its corresponding labels """
-    PRI_jet_num_values = np.unique(x[:,22])
-    sub_group_indices = []
-    x_subgroup = []
-    y_subgroup = []
-    for i in range(int(np.amax(PRI_jet_num_values))+1):
-        sub_group_indices.append(np.where(x[:,22]==i))
-        x_subgroup.append(x[sub_group_indices[i],:])
-        y_subgroup.append(y[sub_group_indices[i]])
-        x_subgroup[i] = np.squeeze(x_subgroup[i])
-        x_subgroup[i] = np.delete(x_subgroup[i], 22, axis=1)
-    
-    return x_subgroup[0], y_subgroup[0], x_subgroup[1], y_subgroup[1], x_subgroup[2], y_subgroup[2], x_subgroup[3], y_subgroup[3]
-
-def standardize(x, mean=None, std=None):
-    ''' Standardize the data such that it has a mean of 0 and a unitary standard deviation. If mean and std are
-        provided (e.g. when we standardize the testing set based on the standardization parameters of the 
-        training set), the function uses them. '''
-    
-    if mean is None:
-        mean = np.mean(x, axis=0)
-    x -= mean 
-    
-    if std is None:
-        std = np.std(x, axis=0)
-    x /= std
-    
-    return x, mean, std 
-
+### - FUNCTIONS - ###
+# - Helpers
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
     Generate a minibatch iterator for a dataset.
@@ -64,7 +36,8 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
         end_index = min((batch_num + 1) * batch_size, data_size)
         if start_index != end_index:
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
-            
+
+# - Linear regression            
 def compute_mse(y, tx, w):
     '''Compute MSE loss.'''
     e = y - tx.dot(w)
@@ -144,6 +117,7 @@ def least_squares(y, tx):
     
     return w, loss
 
+# - Ridge regression
 def ridge_regression(y, tx, lambda_):
     """Ridge regression using normal equations."""
     N = tx.shape[0]
@@ -156,6 +130,7 @@ def ridge_regression(y, tx, lambda_):
         
     return w, loss
 
+# - Logistic regression
 def sigmoid(s):
     """apply sigmoid function."""
     return 1 / (1 + np.exp(-s))
@@ -176,26 +151,26 @@ def compute_gradient_lr(y, tx, w):
     return gradient
 
 # GD version
-def logistic_regression(y, tx, initial_w, max_iters, gamma):
+#def logistic_regression(y, tx, initial_w, max_iters, gamma):
     """Logistic regression using gradient descent or SGD."""
     # Note: we don't have to keep track of the weithts and losses
-    w = initial_w
+#    w = initial_w
     
     # as we assume that the constant term is contained in x
-    tx = np.c_[np.ones((y.shape[0], 1)), tx]
+#    tx = np.c_[np.ones((y.shape[0], 1)), tx]
     
     # gradient descent
-    for i in range(max_iters):
+#    for i in range(max_iters):
         # loss
-        loss = compute_loss_lr(y, tx, w)
+#        loss = compute_loss_lr(y, tx, w)
 
         # gradient
-        gradient = compute_gradient_lr(y, tx, w)
+#        gradient = compute_gradient_lr(y, tx, w)
         
         # update rule
-        w -= gamma * gradient
+#        w -= gamma * gradient
     
-    return w, loss
+#    return w, loss
 
 # SGD version
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
@@ -220,26 +195,26 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
     return w, loss
 
 # GD version
-def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
+#def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     """Regularized logistic regression using gradient descent or SGD."""
     # same as before except that we have the additional penalty term
-    w = initial_w
+#    w = initial_w
     
     # constant term contained in x
-    tx = np.c_[np.ones((y.shape[0], 1)), tx]
+#    tx = np.c_[np.ones((y.shape[0], 1)), tx]
     
     # gradient descent
-    for i in range(max_iters):
+#    for i in range(max_iters):
         # loss
-        loss =  compute_loss_lr + lambda_/2 *  np.squeeze(w.T.dot(w))
+#        loss =  compute_loss_lr + lambda_/2 *  np.squeeze(w.T.dot(w))
         
         # gradient
-        gradient =  compute_gradient_lr + lambda_ * w
+#        gradient =  compute_gradient_lr + lambda_ * w
         
         # update rule
-        w -= gamma * gradient
+#        w -= gamma * gradient
     
-    return w, loss
+#    return w, loss
 
 # SGD version
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
@@ -263,6 +238,17 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     
     return w, loss
 
+
+### - MORE METHODS - ###
+def PCA(x):
+    mean = np.mean(x, axis=0)
+    x_center = x - mean
+    sigma = x_center.T.dot(x_center)
+    eigen_values, eigen_vectors = np.linalg.eig(sigma)
+    right_order = np.argsort(np.abs(eigen_values)) # argsort: ascending order (we want descending)
+    eigen_vectors = eigen_vectors.T[right_order[::-1]] # revers order to have descending
+
+    return mean, eigen_vectors
 def train_test_split(X, y, ratio, seed=12):
     """Split the X and y sets into a training and a validation/testing one."""
     
@@ -323,10 +309,77 @@ def k_fold_cv(y, X, k):
         # 3. compute accuracy
     
     return np.mean(accuracies), np.std(accuracies)
-# - TRAINING & TESTING - #
 
 
-# - MAIN - #
+### - DATA PRE-PROCESSING - ###
+def standardize(x, mean=None, std=None):
+    ''' Standardize the data such that it has a mean of 0 and a unitary standard deviation. If mean and std are
+        provided (e.g. when we standardize the testing set based on the standardization parameters of the 
+        training set), the function uses them. '''
+    
+    if mean is None:
+        mean = np.mean(x, axis=0)
+    x -= mean 
+    
+    if std is None:
+        std = np.std(x, axis=0)
+    x /= std
+    
+    return x, mean, std 
+
+def standardize_data(x):
+    '''
+    TODO: deal with -999 
+    '''
+    mu = np.mean(x, axis=0)
+    sigma = np.std(x_centered, axis=0) 
+    std_x = (x - mu) / sigma
+
+    return std_x, mu, sigma
+
+def split_dataset(y, x):
+    """Split the dataset into subsets, each subset containing all datapoints that have the same value for 
+       the categorical feature PRI_jet_num. The function returns each subset and its corresponding labels """
+    PRI_jet_num_values = np.unique(x[:,22])
+    sub_group_indices = []
+    x_subgroup = []
+    y_subgroup = []
+    for i in range(int(np.amax(PRI_jet_num_values))+1):
+        sub_group_indices.append(np.where(x[:,22]==i))
+        x_subgroup.append(x[sub_group_indices[i],:])
+        y_subgroup.append(y[sub_group_indices[i]])
+        x_subgroup[i] = np.squeeze(x_subgroup[i])
+        x_subgroup[i] = np.delete(x_subgroup[i], 22, axis=1)
+    
+    return x_subgroup[0], y_subgroup[0], x_subgroup[1], y_subgroup[1], x_subgroup[2], y_subgroup[2], x_subgroup[3], y_subgroup[3]
+
+def split_categorical_data(data, labels, feature_nb):
+    '''
+    Split the dataset and its labels into 3 distincts subsets:
+        - PRI_jet_num = 0 (= data_0)
+        - PRI_jet_num = 1 (= data_1)
+        - PRI_jet_num = 2, 3 (= data_3)
+
+    Note: the PRI_jet_num corresponds to the 22th if we use the original data (i.e. tX)
+    '''
+    # not necessary to create a copy
+    # category 0
+    data_0 = data[np.where(data[:, feature_nb] == 0)]
+    labels_0 = labels[np.where(data[:, feature_nb] == 0)]
+
+    # category 1
+    data_1 = data[np.where(data[:, feature_nb] == 1)]
+    labels_1 = labels[np.where(data[:, feature_nb] == 1)]
+
+    # category 2 & 3
+    data_2 = data[np.where(data[:, feature_nb] >= 2)]
+    labels_2 = labels[np.where(data[:, feature_nb] >= 2)]
+
+    return data_0, data_1, data_2, labels_0, labels_1, labels_2
+
+### - TRAINING & TESTING - ###
+
+
 
 
 
