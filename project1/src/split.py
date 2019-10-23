@@ -80,7 +80,7 @@ def k_fold_cv(y, X, k):
     
     return np.mean(accuracies), np.std(accuracies)
 
-def split_categorical_data(data, labels, feature_nb):
+def split_categorical_data(data,feature_indx,labels = None, split = True):
     '''
     Split the dataset and its labels into 3 distincts subsets:
         - PRI_jet_num = 0 (= data_0)
@@ -89,20 +89,19 @@ def split_categorical_data(data, labels, feature_nb):
 
     Note: the PRI_jet_num corresponds to the 22th if we use the original data (i.e. tX)
     '''
+    if (not split):
+        return [(data,labels)]
     # not necessary to create a copy
     # category 0
-    data_0 = data[np.where(data[:, feature_nb] == 0)]
-    labels_0 = labels[np.where(data[:, feature_nb] == 0)]
-
-    # category 1
-    data_1 = data[np.where(data[:, feature_nb] == 1)]
-    labels_1 = labels[np.where(data[:, feature_nb] == 1)]
-
-    # category 2 & 3
-    data_2 = data[np.where(data[:, feature_nb] >= 2)]
-    labels_2 = labels[np.where(data[:, feature_nb] >= 2)]
-
-    return data_0, data_1, data_2, labels_0, labels_1, labels_2
+    data_0 = data[np.where(data[:, feature_indx] == 0)]
+    data_1 = data[np.where(data[:, feature_indx] == 1)]
+    data_2 = data[np.where(data[:, feature_indx] >= 2)]
+    if labels is not None:
+        labels_0 = labels[np.where(data[:, feature_indx] == 0)]
+        labels_1 = labels[np.where(data[:, feature_indx] == 1)]
+        labels_2 = labels[np.where(data[:, feature_indx] >= 2)]
+        return [(data_0,labels_0), (data_1,labels_1), (data_2,labels_2)]
+    return [data_0,data_1,data_2]
 
 ### - TRAINING & TESTING - ###
 
