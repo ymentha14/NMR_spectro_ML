@@ -4,6 +4,13 @@ import csv
 import numpy as np
 
 
+#def clean_uncomplete_features(x, threshold):
+#    """This function removes features that have a number of non-defined values above a given threshold.
+#       In this dataset, the meaningless values or the ones that cannot be computed are given the values -999.0"""
+#    raise Exception('not implemented')
+
+
+
 def load_csv_data(data_path, sub_sample=False):
     """Loads data and returns y (class labels), tX (features) and ids (event ids)"""
     y = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=str, usecols=1)
