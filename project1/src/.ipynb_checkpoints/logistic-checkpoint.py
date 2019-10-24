@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from split import *
+
 def sigmoid(s):
     """apply sigmoid function."""
     return 1 / (1 + np.exp(-s))
@@ -20,16 +22,14 @@ def compute_gradient_lr(y, tx, w):
 
 # SGD version
 
-def logistic_regression(y, tx, initial_w, max_iters, gamma):
+def logistic_regression(y, tx, initial_w, max_iters = 1000, gamma = 0.2):
     """Logistic regression using gradient descent or SGD."""   
     w = initial_w
-    
-    # as we assume that the constant term is contained in x
-    tx = np.c_[np.ones((y.shape[0], 1)), tx]
-    
+    loss = 0
     # stochastic gradient descent
     for i in range(max_iters):
-        for y_batch, tx_batch in batch_iter(y, tx, batch_size=1, num_batches=1): 
+        if i % 10 == 0 :print("logreg {i}th iteration:,  loss = {loss}".format(i = i,loss = loss))
+        for y_batch, tx_batch in batch_iter(y, tx, batch_size=100, num_batches=1): 
             # loss
             loss = compute_loss_lr(y_batch, tx_batch, w)
 

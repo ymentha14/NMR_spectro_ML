@@ -46,7 +46,7 @@ def train_test_split(X, y, ratio, seed=12):
     
     return x_train, x_test, y_train, y_test
 
-def k_fold_cv(y, X, k):
+def k_fold_cv(y, X, k,f):
     """
     k-fold cross-validation for model selection.
     
@@ -63,12 +63,13 @@ def k_fold_cv(y, X, k):
     y = y[permutations]
     
     # array to store the outcome accuracy  of the different folds
-    accuracies = np.zeros(k)
+    accuracies = []
     
     # Indexes for the k different intervals
     idxs = np.linspace(0, len(y), k+1, dtype=int) # +1 for 'upper bound'
      
     for i in range(k):
+        print("{i}/{k} round for the kfold:".format(i = i + 1, k = k))
         X_te = X[idxs[i]:idxs[i+1]] #test indexes
         y_te = y[idxs[i]:idxs[i+1]]
         
@@ -77,9 +78,19 @@ def k_fold_cv(y, X, k):
         
         ## TODO: implement the classifier part 
         # 1. fit data
+        w_opt, loss = f(y_tr,X_tr)
+        
         # 2. compute y_hat
+        y_hat = X_te @ w_opt
+        print(y_hat)
+        y_hat = [-1 if i < 0 else 1.0 for i in y_hat]
+        
         # 3. compute accuracy
-    
+        accur = lambda a,b: sum(1 for x,y in zip(a,b) if x == y) / len(a)
+        obtained_acc = accur (y_te,y_hat)
+        print("obtained accur on {i}/{k} round of kfold: {acc}".format(i = i + 1,k = k, acc = obtained_acc))
+        accuracies.append(obtained_acc)
+        
     return np.mean(accuracies), np.std(accuracies)
 
 def split_categorical_data(data,feature_indx,labels = None, split = True):
@@ -103,7 +114,7 @@ def split_categorical_data(data,feature_indx,labels = None, split = True):
         labels_1 = labels[np.where(data[:, feature_indx] == 1)]
         labels_2 = labels[np.where(data[:, feature_indx] >= 2)]
         return [(data_0,labels_0), (data_1,labels_1), (data_2,labels_2)]
-    return [data_0,data_1,data_2]
+    return [(data_0,None),(data_1,None),(data_2,None)]
 
 ### - TRAINING & TESTING - ###
 
