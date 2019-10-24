@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import numpy as np
+
 # As we'redealing with large arrays, we will use the batch iter method in order to avoid memory access problems
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
