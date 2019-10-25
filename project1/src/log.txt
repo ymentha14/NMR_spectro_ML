@@ -1,0 +1,11 @@
+**********logistic regression************
+
+
+
+
+********* ridge/linear regression************
+
+
+
+
+**************

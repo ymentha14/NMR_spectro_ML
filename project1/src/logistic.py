@@ -46,18 +46,15 @@ def logistic_regression(y, tx, initial_w, max_iters = 1000, gamma = 0.2):
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     """Regularized logistic regression using gradient descent or SGD."""  
     w = initial_w
-    
-    # constant term contained in x
-    tx = np.c_[np.ones((y.shape[0], 1)), tx]
-    
+        
     # gradient descent
     for i in range(max_iters):
-        for y_batch, tx_batch in batch_iter(y, tx, batch_size=1, num_batches=1): 
+        for y_batch, tx_batch in batch_iter(y, tx, batch_size=100, num_batches=1): 
             # loss
             loss = compute_loss_lr(y_batch, tx_batch, w) + lambda_/2 *  np.squeeze(w.T.dot(w))
 
             # gradient
-            gradient = compute_gradient_lr(y_batch, x_batch, w) + lambda_ * w
+            gradient = compute_gradient_lr(y_batch, tx_batch, w) + lambda_ * w
 
             # update rule
             w -= gamma * gradient
