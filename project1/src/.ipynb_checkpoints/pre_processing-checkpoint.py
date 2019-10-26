@@ -31,8 +31,11 @@ def clean_variance(x,x_test):
     x_test = np.delete(x_test, idx_cst_std, 1)
     return x, x_test 
 
-def toy(x):
-    x = np.zeros(3)
+def build_poly(x, degree):
+    """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    return np.concatenate([np.power(x,deg) for deg in range(1,degree+1)],axis = 1)
+
+
     
 def clean_value(x,value_in,value_out,inplace = False):
     """transforms the value_in entries of x in value_out"""

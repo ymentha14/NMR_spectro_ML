@@ -17,7 +17,6 @@ def calculate_mae(e):
     """Calculate the mae for vector e."""
     return np.mean(np.abs(e))
 
-
 def compute_loss_ls(y, tx, w):
     """
     Calculate the least-square loss using mse.

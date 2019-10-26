@@ -103,6 +103,8 @@ def split_categorical_data(data,feature_indx,labels = None, split = True):
     Note: the PRI_jet_num corresponds to the 22th if we use the original data (i.e. tX)
     '''
     if (not split):
+        #case xtest, we return the indexes corresponding to the matrix
+        if labels is None: labels = np.array(range(len(data)))
         return [(data,labels)]
     # not necessary to create a copy
     # category 0
@@ -120,7 +122,7 @@ def split_categorical_data(data,feature_indx,labels = None, split = True):
         labels_1 = labels[index_1]
         labels_2 = labels[index_2]
         return [(data_0,labels_0), (data_1,labels_1), (data_2,labels_2)]
-    return [(data_0,None),(data_1,None),(data_2,None)], [index_0, index_1, index_2]
+    return [(data_0,index_0),(data_1,index_1),(data_2,index_2)]
 
 ### - TRAINING & TESTING - ###
 
