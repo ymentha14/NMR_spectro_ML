@@ -6,15 +6,28 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import numpy as np
 
-def PCA(x):
-    mean = np.mean(x, axis=0)
+
+def get_PCA(x,mean= None):
+    if mean is None:
+        mean = np.mean(x, axis=0)
     x_center = x - mean
     sigma = x_center.T.dot(x_center)
     eigen_values, eigen_vectors = np.linalg.eig(sigma)
     right_order = np.argsort(np.abs(eigen_values)) # argsort: ascending order (we want descending)
     eigen_vectors = eigen_vectors.T[right_order[::-1]] # revers order to have descending
+    coeffs = x_center @ eigen_vectors
+    return mean,eigen_vectors,eigen_values
 
-    return mean, eigen_vectors
+def reduce_PCA(eigvecs,x,factor):
+    #n x q
+    coeffs = x @ eigvecs
+    #q x k
+    eigvecs2 = eigvecs[:,:factor]
+    #n x k
+    coeffs2 = coeffs[:,:factor]
+    #n x q
+    #x = coeffs2 @ eigvecs2.transpose()
+    return np.array(coeffs2)
 
 def clean_variance(x,x_test):
     """

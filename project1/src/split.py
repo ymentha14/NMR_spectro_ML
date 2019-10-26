@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-
+import helpers as hlp
 # As we'redealing with large arrays, we will use the batch iter method in order to avoid memory access problems
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
@@ -46,55 +46,53 @@ def train_test_split(X, y, ratio, seed=12):
     
     return x_train, x_test, y_train, y_test
 
-def k_fold_cv(y, X, k,f):
+def k_fold_cv(y, X, k,f,metric = hlp.accuracy):
     """
     k-fold cross-validation for model selection.
-    
+
     y: labels
     X: features matrix
     k: number of folds
-    
+
     output: mean accuracy and std across the k-folds
     """
-    
+
     # Before partitionning the data we shuffle it randomly
     permutations = np.random.permutation(len(y))
     X = X[permutations]
     y = y[permutations]
-    
+
     # array to store the outcome accuracy  of the different folds
-    accuracies = []
-    losses = []
-    
+    metric_train = []
+    metric_test = []
     # Indexes for the k different intervals
     idxs = np.linspace(0, len(y), k+1, dtype=int) # +1 for 'upper bound'
-     
+
     for i in range(k):
         print("{i}/{k} round for the kfold:".format(i = i + 1, k = k))
         X_te = X[idxs[i]:idxs[i+1]] #test indexes
         y_te = y[idxs[i]:idxs[i+1]]
-        
+
         X_tr = np.delete(X, list(np.arange(idxs[i], idxs[i+1])), axis=0)
         y_tr = np.delete(y, list(np.arange(idxs[i], idxs[i+1])), axis=0)
-        
-        ## TODO: implement the classifier part 
-        # 1. fit data
-        w_opt, loss = f(y_tr,X_tr)
-        
-        # 2. compute y_hat
-        y_hat = X_te @ w_opt
-        print(y_hat)
-        y_hat = [-1 if i < 0 else 1.0 for i in y_hat]
-        
-        # 3. compute accuracy
-        accur = lambda a,b: sum(1 for x,y in zip(a,b) if x == y) / len(a)
-        obtained_acc = accur (y_te,y_hat)
-        print("obtained accur on {i}/{k} round of kfold: {acc}".format(i = i + 1,k = k, acc = obtained_acc))
-        accuracies.append(obtained_acc)
-        losses.append(loss)
-        
-    return accuracies, losses
 
+        ## TODO: implement the classifier part
+        # 1. fit data
+        w_opt, loss_train = f(y_tr,X_tr)
+        # 2. compute y_hat
+        y_hat_test = X_te @ w_opt
+        y_hat_train = X_tr @ w_opt
+        y_hat_test = [-1 if i < 0 else 1.0 for i in y_hat_test]
+        y_hat_train = [-1 if i < 0 else 1.0 for i in y_hat_train]
+
+        # 3. compute accuracy
+        obtained_met_test = metric (y_te,y_hat_test)
+        obtained_met_train = metric(y_tr, y_hat_train)
+        print("obtained accur on {i}/{k} round of kfold:{acc}".format(i = i + 1,k = k, acc = obtained_met_test))
+        metric_train.append(obtained_met_train)
+        metric_test.append(obtained_met_test)
+
+    return metric_train,metric_test
 def split_categorical_data(data,feature_indx,labels = None, split = True):
     '''
     Split the dataset and its labels into 3 distincts subsets:
