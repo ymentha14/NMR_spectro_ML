@@ -106,15 +106,21 @@ def split_categorical_data(data,feature_indx,labels = None, split = True):
         return [(data,labels)]
     # not necessary to create a copy
     # category 0
-    data_0 = data[np.where(data[:, feature_indx] == 0)]
-    data_1 = data[np.where(data[:, feature_indx] == 1)]
-    data_2 = data[np.where(data[:, feature_indx] >= 2)]
+    index_0 = np.array(np.where(data[:, feature_indx] == 0))
+    index_0 = np.squeeze(index_0)
+    data_0 = data[index_0]
+    index_1 = np.array(np.where(data[:, feature_indx] == 1))
+    index_1 = np.squeeze(index_1)
+    data_1 = data[index_1]
+    index_2 = np.array(np.where(data[:, feature_indx] >= 2))
+    index_2 = np.squeeze(index_2)
+    data_2 = data[index_2]
     if labels is not None:
-        labels_0 = labels[np.where(data[:, feature_indx] == 0)]
-        labels_1 = labels[np.where(data[:, feature_indx] == 1)]
-        labels_2 = labels[np.where(data[:, feature_indx] >= 2)]
+        labels_0 = labels[index_0]
+        labels_1 = labels[index_1]
+        labels_2 = labels[index_2]
         return [(data_0,labels_0), (data_1,labels_1), (data_2,labels_2)]
-    return [(data_0,None),(data_1,None),(data_2,None)]
+    return [(data_0,None),(data_1,None),(data_2,None)], [index_0, index_1, index_2]
 
 ### - TRAINING & TESTING - ###
 
