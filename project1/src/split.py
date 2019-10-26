@@ -64,6 +64,7 @@ def k_fold_cv(y, X, k,f):
     
     # array to store the outcome accuracy  of the different folds
     accuracies = []
+    losses = []
     
     # Indexes for the k different intervals
     idxs = np.linspace(0, len(y), k+1, dtype=int) # +1 for 'upper bound'
@@ -90,8 +91,9 @@ def k_fold_cv(y, X, k,f):
         obtained_acc = accur (y_te,y_hat)
         print("obtained accur on {i}/{k} round of kfold: {acc}".format(i = i + 1,k = k, acc = obtained_acc))
         accuracies.append(obtained_acc)
+        losses.append(loss)
         
-    return np.mean(accuracies), np.std(accuracies)
+    return accuracies, losses
 
 def split_categorical_data(data,feature_indx,labels = None, split = True):
     '''
