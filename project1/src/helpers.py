@@ -11,9 +11,36 @@ import numpy as np
 #       In this dataset, the meaningless values or the ones that cannot be computed are given the values -999.0"""
 #    raise Exception('not implemented')
 
+T_pos = lambda a,b: sum(1 for x,y in zip(a,b) if x == y and x == 1)
+F_pos = lambda a,b: sum(1 for x,y in zip(a,b) if x != y and x == 1)
+T_neg = lambda a,b: sum(1 for x,y in zip(a,b) if x == y and x == -1)
+F_neg = lambda a,b: sum(1 for x,y in zip(a,b) if x != y and x == -1)
 
-accuracy = lambda a,b: sum(1 for x,y in zip(a,b) if x == y) / len(a)
-#f1 = todo
+
+def accuracy(y,y_corr):
+    return (T_pos(y,y_corr) + T_neg(y,y_corr))/len(y)
+    
+def precision(y,y_corr):
+    Tp = T_pos(y,y_corr)
+    Fp = F_pos(y,y_corr)
+    if (Tp + Fp == 0):
+        return 0
+    return Tp/(Tp + Fp)
+
+def recall(y,y_corr):
+    Tp = T_pos(y,y_corr)
+    Fn = F_neg(y,y_corr)
+    return Tp / (Tp + Fn)
+    
+def f1(y,y_corr):
+    prec = precision(y,y_corr)
+    rec = recall(y,y_corr)
+    if (prec + rec == 0):
+        return 0
+    return 2*prec*rec / (prec + rec)
+
+dico = {accuracy:"accuracy",f1:"F1 score"}
+
 
 def load_csv_data(data_path, sub_sample=False):
     """Loads data and returns y (class labels), tX (features) and ids (event ids)"""
