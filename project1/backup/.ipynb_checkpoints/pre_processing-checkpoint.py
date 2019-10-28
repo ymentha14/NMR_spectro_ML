@@ -1,31 +1,20 @@
 # -*- coding: utf-8 -*-
 
 
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-def get_PCA(x,mean= None):
-    if mean is None:
-        mean = np.mean(x, axis=0)
+def PCA(x):
+    mean = np.mean(x, axis=0)
     x_center = x - mean
     sigma = x_center.T.dot(x_center)
     eigen_values, eigen_vectors = np.linalg.eig(sigma)
     right_order = np.argsort(np.abs(eigen_values)) # argsort: ascending order (we want descending)
     eigen_vectors = eigen_vectors.T[right_order[::-1]] # revers order to have descending
-    coeffs = x_center @ eigen_vectors
-    return mean,eigen_vectors,eigen_values
 
-def reduce_PCA(eigvecs,x,factor):
-    #n x q
-    coeffs = x @ eigvecs
-    #q x k
-    eigvecs2 = eigvecs[:,:factor]
-    #n x k
-    coeffs2 = coeffs[:,:factor]
-    #n x q
-    #x = coeffs2 @ eigvecs2.transpose()
-    return np.array(coeffs2)
+    return mean, eigen_vectors
 
 def clean_variance(x,x_test):
     """
@@ -41,17 +30,6 @@ def clean_variance(x,x_test):
     x = np.delete(x, idx_cst_std, 1)
     x_test = np.delete(x_test, idx_cst_std, 1)
     return x, x_test 
-
-def build_poly(x, degree):
-    assert(all(x[:,0] == 1))
-    assert(x.shape[1] <= 31)
-    
-    x = np.delete(x, 0, axis = 1)
-
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    x = np.concatenate([np.power(x,deg) for deg in range(1,degree+1)],axis = 1)
-    x = np.c_[np.ones((x.shape[0], 1)), x]
-    return x
 
 
     
@@ -109,5 +87,20 @@ def standardize_data(x, mean = None,std = None): #replace_nan=True
 
 def PCA_visualize(tX):
     #shows the percentage of variance in tX explained by the first x PCs.
-    pca = get_PCA(tX)
-    plt.plot(pca)
+    pca = PCA(n_components=30)
+    pca.fit(tX)
+
+    fig, ax = plt.subplots(1,2)
+    ax[0].plot(np.cumsum(pca.explained_variance_ratio_))
+    ax[0].set_xlabel('Number of components')
+    ax[0].set_ylabel('Cumulative explained variance')
+    """
+    scaler = StandardScaler()
+    scaler.fit(tX)
+    tX_std = scaler.transform(tX)
+
+    pca.fit(tX_std)
+    ax[1].plot(np.cumsum(pca.explained_variance_ratio_))
+    ax[1].set_xlabel('Number of components')
+    ax[1].set_ylabel('Cumulative explained variance STD')
+    """

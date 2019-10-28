@@ -47,7 +47,7 @@ def train_test_split(X, y, ratio, seed=12):
     return x_train, x_test, y_train, y_test
 
 
-def k_fold_cv(y, X, k,f,metric = hlp.accuracy):
+def k_fold_cv(y, X, k,f,metric = hlp.accuracy,verbose = True):
     """
     k-fold cross-validation for model selection.
 
@@ -71,35 +71,39 @@ def k_fold_cv(y, X, k,f,metric = hlp.accuracy):
     # Indexes for the k different intervals
     idxs = np.linspace(0, len(y), k+1, dtype=int) # +1 for 'upper bound'
     for i in range(k):
-        print("{i}/{k} round for the kfold:".format(i = i + 1, k = k))
-        X_te = X[idxs[i]:idxs[i+1]] #test indexes
-        y_te = y[idxs[i]:idxs[i+1]]
+        if verbose: print("{i}/{k} round for the kfold:".format(i = i + 1, k = k))
+        try:
+            X_te = X[idxs[i]:idxs[i+1]] #test indexes
+            y_te = y[idxs[i]:idxs[i+1]]
 
-        X_tr = np.delete(X, list(np.arange(idxs[i], idxs[i+1])), axis=0)
-        y_tr = np.delete(y, list(np.arange(idxs[i], idxs[i+1])), axis=0)
+            X_tr = np.delete(X, list(np.arange(idxs[i], idxs[i+1])), axis=0)
+            y_tr = np.delete(y, list(np.arange(idxs[i], idxs[i+1])), axis=0)
 
-        ## TODO: implement the classifier part
-        # 1. fit data
-        w_opt, loss_train = f(y_tr,X_tr)
-        # 2. compute y_hat
-        y_hat_test = X_te @ w_opt
-        y_hat_train = X_tr @ w_opt
-        y_hat_trains = [[-1 if i < cut else 1.0 for i in y_hat_train] for cut in cutoffs]
-        metr_per_cut = [metric(j,y_tr) for j in y_hat_trains]
-        opt_indx = np.argmax(metr_per_cut)
-        opt_cutoff = cutoffs[opt_indx]
+            ## TODO: implement the classifier part
+            # 1. fit data
         
-        y_hat_train = [-1 if i < opt_cutoff else 1.0 for i in y_hat_train]
-        y_hat_test = [-1 if i < opt_cutoff else 1.0 for i in y_hat_test]
-        
-        # 3. compute accuracy
-        obtained_met_test = metric (y_hat_test,y_te)
-        obtained_met_train = metric(y_hat_train,y_tr)
-        
-        print("obtained " + hlp.dico[metric] + " on {i}/{k} round of kfold:{acc}".format(i = i + 1,k = k, acc = obtained_met_test))
-        metric_train.append(obtained_met_train)
-        metric_test.append(obtained_met_test)
-        opt_cutoffs.append(opt_cutoff)
+            w_opt, loss_train = f(y_tr,X_tr)
+            # 2. compute y_hat
+            y_hat_test = X_te @ w_opt
+            y_hat_train = X_tr @ w_opt
+            y_hat_trains = [[-1 if i < cut else 1.0 for i in y_hat_train] for cut in cutoffs]
+            metr_per_cut = [metric(j,y_tr) for j in y_hat_trains]
+            opt_indx = np.argmax(metr_per_cut)
+            opt_cutoff = cutoffs[opt_indx]
+
+            y_hat_train = [-1 if i < opt_cutoff else 1.0 for i in y_hat_train]
+            y_hat_test = [-1 if i < opt_cutoff else 1.0 for i in y_hat_test]
+
+            # 3. compute accuracy
+            obtained_met_test = metric (y_hat_test,y_te)
+            obtained_met_train = metric(y_hat_train,y_tr)
+
+            if verbose: print("obtained " + hlp.dico[metric] + " on {i}/{k} round of kfold:{acc}".format(i = i + 1,k = k, acc = obtained_met_test))
+            metric_train.append(obtained_met_train)
+            metric_test.append(obtained_met_test)
+            opt_cutoffs.append(opt_cutoff)
+        except:
+            print("Singular Matrix in KFOLD!")
 
     return metric_train,metric_test,opt_cutoffs
 

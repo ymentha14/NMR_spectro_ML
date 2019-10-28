@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -45,8 +43,15 @@ def clean_variance(x,x_test):
     return x, x_test 
 
 def build_poly(x, degree):
+    assert(all(x[:,0] == 1))
+    assert(x.shape[1] <= 31)
+    
+    x = np.delete(x, 0, axis = 1)
+
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    return np.concatenate([np.power(x,deg) for deg in range(1,degree+1)],axis = 1)
+    x = np.concatenate([np.power(x,deg) for deg in range(1,degree+1)],axis = 1)
+    x = np.c_[np.ones((x.shape[0], 1)), x]
+    return x
 
 
     
@@ -104,20 +109,5 @@ def standardize_data(x, mean = None,std = None): #replace_nan=True
 
 def PCA_visualize(tX):
     #shows the percentage of variance in tX explained by the first x PCs.
-    pca = PCA(n_components=30)
-    pca.fit(tX)
-
-    fig, ax = plt.subplots(1,2)
-    ax[0].plot(np.cumsum(pca.explained_variance_ratio_))
-    ax[0].set_xlabel('Number of components')
-    ax[0].set_ylabel('Cumulative explained variance')
-    """
-    scaler = StandardScaler()
-    scaler.fit(tX)
-    tX_std = scaler.transform(tX)
-
-    pca.fit(tX_std)
-    ax[1].plot(np.cumsum(pca.explained_variance_ratio_))
-    ax[1].set_xlabel('Number of components')
-    ax[1].set_ylabel('Cumulative explained variance STD')
-    """
+    pca = get_PCA(tX)
+    plt.plot(pca)
