@@ -29,4 +29,4 @@ The `implementations.py` file contains all useful functions and is divided into 
 ![Data processing pipeline](https://github.com/ymentha14/MLprojectfall2019/blob/master/project1/results/pipeline.png)
 
 ### Code execution
-`python3 run.py`
+Run the following command line in the terminal : `python3 run.py`
