@@ -30,4 +30,3 @@ The `implementations.py` file contains all useful functions and is divided into 
 
 ### Code execution
 
-### References
