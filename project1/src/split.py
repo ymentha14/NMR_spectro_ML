@@ -46,6 +46,16 @@ def train_test_split(X, y, ratio, seed=12):
     
     return x_train, x_test, y_train, y_test
 
+def get_best_cutoff(X,y,w,metric):
+    cutoffs = np.linspace(-5,5,40)
+    y_hat = X @ w
+    y_hat_tries = [[-1 if i < cut else 1.0 for i in y_hat] for cut in cutoffs]
+    metr_per_cut = [metric(j,y) for j in y_hat_tries]
+    opt_indx = np.argmax(metr_per_cut)
+    opt_cutoff = cutoffs[opt_indx]
+    assert(opt_indx != 0 and opt_indx != len(cutoffs)-1)
+    return opt_cutoff
+
 
 def k_fold_cv(y, X, k,f,metric = hlp.accuracy,verbose = True):
     """
