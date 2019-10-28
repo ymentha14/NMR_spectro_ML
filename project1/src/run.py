@@ -2,7 +2,7 @@
 
 ## Loading the Data:
 
-import implementation as imp
+import implementations as imp
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
@@ -22,14 +22,15 @@ print(y.shape)
 
 ## Parameters
 
-KFOLD = 2
+KFOLD = 5
 METRIC = imp.accuracy
 LAMBDAS_OPTS = []
 DEGREES_POLY = []
-degrees = np.arange(1, 3)
-lambdas = np.logspace(-5, 0, 1)
+degrees = np.arange(1, 14)
+lambdas = np.logspace(-5, 0, 15)
 
 ## Data exploration
+print("\n ############################# DATA EXPLORATION ###############################")
 
 data = pd.read_csv(DATA_TRAIN_PATH)
 test_data = pd.read_csv(DATA_TEST_PATH)
@@ -39,8 +40,6 @@ test_data.Prediction = test_data.Prediction.map(dic)
 data.head(10)
 
 mask = data.isin([-999]).any(axis = 1)
-print(len(data[mask]))
-print(len(data))
 
 #_The vast majoriy of our data has -999 values: we'd better handle it carefully_
 
@@ -50,12 +49,9 @@ mean = np.nanmean(tX,axis = 0)
 print('Train set size: {} samples x {} features'.format(pd.DataFrame(tX).shape[0], pd.DataFrame(tX).shape[1]))
 print('Test set size: {} samples x {} features'.format(test_data.shape[0], pd.DataFrame(tX).shape[1]))
 
-data.info()
-
-data.describe()
-
 
 #### Class separation - Justification
+print("\n ############################# CLASS SEPARATION ###############################")
 
 col_names = list(data.columns)[2:]
 
@@ -110,6 +106,7 @@ fig.savefig("../results/classes_comparison.png")
 
 
 ## Data Cleaning
+print("\n ############################# DATA CLEANING ###############################")
 
 #totrash before submit: we use pandas to know to which index PRI_jet_num does correspond.
 np.where(data.columns.values == "PRI_jet_num")
@@ -148,6 +145,7 @@ for i,((x_train,y_train),(x_test,test_indx)) in enumerate(zip(data_trains,data_t
     clean_data_tests.append((x_test,test_indx))
 
 ## Optimization
+print("\n ############################OPTIMIZATION############################")
 
 #### Ridge
 
@@ -255,6 +253,8 @@ for nb, met in enumerate(metrics_tot):
 
 
 ## Visualization
+print("\n ############################## VIZUALIZATION ###############################")
+
 
 fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(16,16))
 ax = axes.flatten()
@@ -309,7 +309,6 @@ metrics_group_stds = []
 cutoffs_group = []
 degre_polys = [12,12,13]
 for round_,((x_train,y_train),meth,deg) in enumerate(zip(clean_data_trains,methods,degre_polys)):
-    print("#################################")
     print("**********treating the {i}th group of data:**************".format(i = round_+1))
     x_poly = imp.build_poly(x_train, deg)
     metrics, metric_stds,opt_cutoffs = imp.k_fold_cv(y_train,x_poly,KFOLD,meth,metric = METRIC)
@@ -320,6 +319,7 @@ print("\n done! Obtained :" + imp.dico[METRIC],[np.mean(i) for i in metrics_grou
 print("ideal cutoffs for these groups-methods pairs:",[np.mean(i) for i in cutoffs_group])
 
 ## Submission
+print("\n ################################# SUBMISSION ################################")
 
 #_We now interpolate the data thanks to the model defined 2 cells higher..._
 
@@ -338,4 +338,5 @@ for (x_test,y_indx),(x_train,y_train),meth,deg in zip(clean_data_tests,clean_dat
 
 imp.create_csv_submission(ids_test,y_submit,"../darth_mole.csv")
 
-print("Program terminated")
+print("The program terminated successfully. We hope you enjoyed the run.")
+exit(0)
