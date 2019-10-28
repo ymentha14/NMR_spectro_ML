@@ -19,9 +19,9 @@ The `run.py` file contains the main and can be run in a terminal.
 
 The `implementations.py` file contains all useful functions and is divided into 3 sections: 
 
-    - "Implementations" contains the 6 working methods from the labs, that is: `least_squares_GD`, `least_squares_SGD`, `least_squares`,         `ridge_regression`, `logistic_regression` and `reg_logistic_regression`.
-    - "Utilitaries" contains all the methods that are needed in exploratory data analysis and feature engineering as well as all the              methods that are used by the 6 methods from "Implementations".
-    - "Visualization" contains all the functions that are made to display the results in figures.
+   - "Implementations" contains the 6 working methods from the labs, that is: `least_squares_GD`, `least_squares_SGD`, `least_squares`,        `ridge_regression`, `logistic_regression` and `reg_logistic_regression`.
+   - "Utilitaries" contains all the methods that are needed in exploratory data analysis and feature engineering as well as all the              methods that are used by the 6 methods from "Implementations".
+   - "Visualization" contains all the functions that are made to display the results in figures.
     
 The `proj1_helpers.py`file contains the functions provided by the teaching team. They allow to load the data, predict the labels and create a submission file in `.csv` format. 
 
