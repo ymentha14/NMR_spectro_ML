@@ -1,5 +1,0 @@
-* 22/11 Yann: 
- * Linear regression | 10000 samples:              R2test = -26.84
- * Ridge regression | 10000 samples:               R2test = 0.79
- * Linear regression | 10000 samples |PCA 40:      R2test = 0.85
- * Ridge regression | 10000 samples | PCA 40:      R2test = 0.83
