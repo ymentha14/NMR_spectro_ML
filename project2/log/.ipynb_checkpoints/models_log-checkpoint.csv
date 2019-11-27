@@ -1,2 +1,8 @@
-Linear Regression,IQR = 0.5-0.95,PCA = 40,Minmxscaler,R2 = 0.4,MSE = 8.86, MAE = 1.62
-Linear Regression,PCA = 40,Minmxscaler,R2 = 0.4,MSE = 8.86, MAE = 1.62
+Linear Regression,IQR = 0.5-0.95,PCA = 40,Minmxscaler,R2 = 0.4,MSE = 8.86, MAE = 1.62,
+Linear Regression,PCA = 40,Minmxscaler,R2 = 0.4,MSE = 8.86, MAE = 1.62,
+MLP, PCA=40,Minmaxscaler,R2=?,MSE=1.15, MAE=0.79, 1hidden(100)
+IQROutlier,Minmax,PCA100,ridge:alpha=31.62,MSE=0.95,MAE = 0.7,R2 = 0.83,NSAMPLE = 5000
+---,Minmax,PCA100,ridge:alpha=0.001,MSE=1.85,MAE=0.85,R2 = 0.87, NSAMPLE = 5000
+IQROutlier,Minmax,SelectKbest:5000,PCA100,ridge:alpha=31.62,MSE=0.87,MAE = 0.66,R2 = 0.85,NSAMPLE = 5000
+IQROutlier,Minmax,PCA80,Randomforest:n=100,MSE=1.38,MAE = 0.74,R2 = 0.72,NSAMPLE = 5000
+
