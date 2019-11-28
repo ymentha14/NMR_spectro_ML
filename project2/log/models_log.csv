@@ -1,3 +1,0 @@
-Linear Regression,IQR = 0.5-0.95,PCA = 40,Minmxscaler,R2 = 0.4,MSE = 8.86, MAE = 1.62,
-Linear Regression,PCA = 40,Minmxscaler,R2 = 0.4,MSE = 8.86, MAE = 1.62,
-MLP, PCA=40,Minmaxscaler,R2=?,MSE=1.15, MAE=0.79, 1hidden(100)
