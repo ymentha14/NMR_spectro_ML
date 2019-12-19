@@ -1,5 +1,6 @@
 import numpy as np 
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 from keras.callbacks import ModelCheckpoint
 from keras.models import Sequential
