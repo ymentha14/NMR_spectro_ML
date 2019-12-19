@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from sklearn.decomposition import PCA
+
 from keras.callbacks import ModelCheckpoint
 from keras.models import Sequential
 from keras.optimizers import Adam, SGD

@@ -16,6 +16,7 @@ from keras.optimizers import Adam, SGD
 from keras.layers import Dense, Activation, Flatten, Dropout, BatchNormalization, LeakyReLU
 
 import helpers as hl 
+import outliers
 
 
 def train_model(model, train_input, train_target, mini_batch_size, monitor_loss=False):
@@ -65,6 +66,9 @@ def k_fold_nn(n, X_total, y_total, iqr=True):
         print("FOLD {}".format(idx+1))
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
+
+        if iqr:
+            X_train, y_train = outliers.IQR_y_outliers(X_train, y_train)
 
         train_input = torch.Tensor(X_train)
         test_input = torch.Tensor(X_test)
