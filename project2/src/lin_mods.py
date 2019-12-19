@@ -24,6 +24,7 @@ def test_alphas_meth(meth,alphas,X,y,k = 4):
         rid = meth(alpha = alpha)
         res_mse.append(-cross_val_score(rid,X,y,cv = k,scoring='neg_mean_squared_error'))
     fig,ax = plt.subplots(1)
+    ax.set_xscale('log')
     ax.semilogx(alphas,res_mse)
     ax.set_ylabel('Mse')
     ax.set_xlabel('alphas')
