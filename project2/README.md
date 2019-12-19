@@ -1,56 +1,22 @@
 ## A machine learning approach to determine chemical shifts in NMR spectroscopy data 
+**Machine Learning (CS-433)**
 _____________________________________________________________________
-**Machine Learning (CS-433)** - Project 2, December 2019
+Project 2, December 2019
 
 _Yann Mentha, Maxime Epars, Gianni Giusto_
-
-
-### About the project
-
 
 ### Dataset
 The  dataset is divided into a training and a testing set composed of 250’000 and 568’238 samples respectively and both having 30 features. The training set is paired with labels where each sample is associated  to  a  category  (−1 for  background  noise  and 1 for the presence of a Higgs Boson).
 
-### Running instructions
-To properly run the current project, follow carefully the following steps.
-
-```
-Step 1
-Download the datafiles to shared by the COSMO lab: https://drive.google.com/drive/u/1/folders/1Iz_aDqnylGmsQHzHSxSlvsPRmFhwVcoM
-```
-
-```
-Step 2
-Download the code (*.zip* format) from the course submission plateform: XXX
-```
-
-```
-Step 3
-From the zip archive, install the required packages liste in the .yml file.
-The easiest solution is to create an environment with the required packages using: ```conda env create -f environment.yml```
-```
-
-```
-Step 4
-Open either the ```project2_ann_mac.ipynb``` or ```data_story.ipynb``` notebooks and run all the kernel.
-```
-
-
 ### Code architecture
-The code is separated into distinct files:
+The code is separated into 2 distinct files:
 
->1. data_story.ipynb
-Content:
->2. project2_ann_mac.ipynb
-Content:
->3. helpers.py
-Content:
->4. pickle file
-Content:
+>1. run.py
+>2. implementations.py
 
-The `data_story.ipynb` file contains the main and can be run in a terminal. 
+The `run.py` file contains the main and can be run in a terminal. 
 
-The `project2_ann_mac.py` file contains all useful functions and is divided into 5 sections: 
+The `implementations.py` file contains all useful functions and is divided into 5 sections: 
 
    - "IMPLEMENTATIONS" contains the 6 working methods from the labs, that is: `least_squares_GD`, `least_squares_SGD`, `least_squares`,        `ridge_regression`, `logistic_regression` and `reg_logistic_regression`.
    - "UTILITARIES" contains functions that are called by the 6 methods from "IMPLEMENTATIONS" (e.g. gradient computation) and other             various handy methods 
@@ -65,4 +31,3 @@ The `project2_ann_mac.py` file contains all useful functions and is divided into
 
 ### Code execution
 Run the following command line in the terminal : `python3 run.py`
-

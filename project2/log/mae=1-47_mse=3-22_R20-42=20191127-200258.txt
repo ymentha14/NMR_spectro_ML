@@ -1,5 +1,0 @@
-{
-    "mae": 1.467713583559327,
-    "mse": 3.2179689911966634,
-    "r2": 0.4188075715310432
-}["MinMaxScaler(copy=True, feature_range=(0, 1))", "KernelPCA(alpha=1.0, coef0=1, copy_X=True, degree=3, eigen_solver='auto',\n          fit_inverse_transform=False, gamma=None, kernel='rbf',\n          kernel_params=None, max_iter=None, n_components=100, n_jobs=None,\n          random_state=None, remove_zero_eig=False, tol=0)", "Ridge(alpha=10, copy_X=True, fit_intercept=True, max_iter=None, normalize=False,\n      random_state=None, solver='auto', tol=0.001)"]
