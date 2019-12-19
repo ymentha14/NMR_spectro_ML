@@ -1,0 +1,5 @@
+{
+    "mae": 1.2337832162066154,
+    "mse": 3.3987703840934174,
+    "r2": 0.6246928047282071
+}["Ridge(alpha=1e-05, copy_X=True, fit_intercept=True, max_iter=None,\n      normalize=False, random_state=None, solver='auto', tol=0.001)"]
