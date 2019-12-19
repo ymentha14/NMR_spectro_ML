@@ -1,6 +1,12 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 
+import torch 
+import torch.nn as nn
+import torch.nn.functional as F
+from torch import optim
+
+
 from keras.callbacks import ModelCheckpoint
 from keras.models import Sequential
 from sklearn.model_selection import KFold
@@ -21,6 +27,7 @@ class NN3():
         self.apply_iqr = apply_iqr
         self.apply_pca = apply_pca
         self.apply_scaler = apply_scaler
+        self.normalize = normalize
         
     def train_model(self,model, train_input, train_target, monitor_loss=False):
         criterion = nn.MSELoss() #regression task
