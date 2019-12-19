@@ -1,4 +1,10 @@
 import numpy as np 
+
+from sklearn.model_selection import KFold
+from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
+
 import torch 
 import torch.nn as nn
 import torch.nn.functional as F
@@ -9,12 +15,15 @@ from keras.models import Sequential
 from keras.optimizers import Adam, SGD
 from keras.layers import Dense, Activation, Flatten, Dropout, BatchNormalization, LeakyReLU
 
+import helpers as hl 
+
+
 def train_model(model, train_input, train_target, mini_batch_size, monitor_loss=False):
     '''Train the model using Mini-batch SGD'''
     
     criterion = nn.MSELoss() #regression task
     optimizer = optim.Adam(model.parameters(), lr = 1e-4) #1e-4 normalement
-    nb_epochs = 150
+    nb_epochs = 10
     
     # Monitor loss
     losses = []
@@ -39,6 +48,47 @@ def train_model(model, train_input, train_target, mini_batch_size, monitor_loss=
     if monitor_loss:
         return losses
     
+def k_fold_nn(n, X_total, y_total, iqr=True):
+    mini_batch_size = 10
+    
+    # 4-fold cross-validation
+    mse_storage = []
+    mae_storage = []
+    r2_storage = []
+
+    # Load data, remove outliers but do not split yet into train and test
+    X, y = hl.load_data(n, X_total, y_total)
+
+    kf = KFold(n_splits=4, shuffle=True)
+
+    for idx, (train_index, test_index) in enumerate(kf.split(X)):
+        print("FOLD {}".format(idx+1))
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+
+        train_input = torch.Tensor(X_train)
+        test_input = torch.Tensor(X_test)
+        train_target = torch.Tensor(y_train.reshape(len(y_train), 1))
+        test_target = torch.Tensor(y_test.reshape(len(y_test), 1))
+
+        nb_input_neurons = train_input.shape[1]
+
+        model = Net_3(nb_input_neurons) 
+        losses = train_model(model, train_input, train_target, mini_batch_size, monitor_loss=True)
+
+        #Make predictions
+        y_hat = compute_pred(model, test_input)
+
+        #Compute score
+        mse_nn, mae_nn, r2_nn = compute_score(y_test, y_hat.detach().numpy())
+
+        mse_storage.append(mse_nn)
+        mae_storage.append(mae_nn)
+        r2_storage.append(r2_nn)
+        
+        print('MSE: {:0.2f} \nMAE: {:0.2f} \nr2: {:0.2f}'.format(mse_nn, mae_nn, r2_nn))
+    
+    return mse_storage, mae_storage, r2_storage
     
 def compute_pred(model, data_input):
     '''Given a trained model, output the prediction corresponding to data_input'''
