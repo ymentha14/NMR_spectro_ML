@@ -1,12 +1,14 @@
 ## A machine learning approach to determine chemical shifts in NMR spectroscopy data 
+**Machine Learning (CS-433)**
 _____________________________________________________________________
-**Machine Learning (CS-433)** - Project 2, December 2019
+Project 2, December 2019
 
 _Maxime Epars, Gianni Giusto, Yann Mentha_
 
 
 ### About the project
 For this _Machine Learning for science_ project, we worked together with the Laboratory of Computational Science and Modeling (COSMO) at EPFL and aimed to determine the chemical shifts of atoms from solid-state nuclear magnetic resonance (NMR) spectroscopy data.
+
 
 ### Dataset
 Features describe the local environment of each atom as a neighborhood density, represented by a superposition of gaussians centered on each of the atom positions contained in the 3D space.  We were provided with 3 datasets each consisting of a different local environment (_i.e._ corresponding to a different cut-off radius) of 3, 5 and 7 Angstrom.
@@ -37,7 +39,8 @@ Open either the project2_ann_mac.ipynb or data_story.ipynb notebooks and run all
 
 
 ### Code architecture
-The code is separated into distinct files:
+The code is separated into 2 distinct files:
+
 
 >1. data_story.ipynb
 >2. project2_ann_mac.ipynb
@@ -52,6 +55,7 @@ The `helpers.py` file contains all useful function required to load and preproce
 
 The `pickle files` contains all pre-runned test to save time when displaying the results.
 
+
    - "IMPLEMENTATIONS" contains the 6 working methods from the labs, that is: `least_squares_GD`, `least_squares_SGD`, `least_squares`,        `ridge_regression`, `logistic_regression` and `reg_logistic_regression`.
    - "UTILITARIES" contains functions that are called by the 6 methods from "IMPLEMENTATIONS" (e.g. gradient computation) and other             various handy methods 
    - "DATA PROCESSING" contains all the functions that are used to process the data, perform feature engineering, ...
@@ -62,6 +66,5 @@ The `pickle files` contains all pre-runned test to save time when displaying the
 
 ### Data processing pipeline
 ![Data processing pipeline](https://github.com/ymentha14/MLprojectfall2019/blob/master/project1/results/pipeline.png)
-
 
 

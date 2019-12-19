@@ -1,5 +1,0 @@
-{
-    "mae": 1.8562545427729773,
-    "mse": 5.650213643526567,
-    "r2": 0.04363852603455152
-}["RobustScaler(copy=True, quantile_range=(25.0, 75.0), with_centering=True,\n             with_scaling=True)", "PCA(copy=True, iterated_power='auto', n_components=100, random_state=None,\n    svd_solver='auto', tol=0.0, whiten=False)", "Ridge(alpha=0.004641588833612777, copy_X=True, fit_intercept=True,\n      max_iter=None, normalize=False, random_state=None, solver='auto',\n      tol=0.001)"]
