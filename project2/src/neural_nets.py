@@ -1,4 +1,8 @@
 import numpy as np 
+import torch 
+import torch.nn as nn
+import torch.nn.functional as F
+from torch import optim
 
 from keras.callbacks import ModelCheckpoint
 from keras.models import Sequential

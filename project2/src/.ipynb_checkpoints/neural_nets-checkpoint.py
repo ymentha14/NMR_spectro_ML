@@ -1,200 +1,122 @@
 import numpy as np 
+import torch 
+import torch.nn as nn
+import torch.nn.functional as F
+from torch import optim
 
 from keras.callbacks import ModelCheckpoint
 from keras.models import Sequential
 from keras.optimizers import Adam, SGD
 from keras.layers import Dense, Activation, Flatten, Dropout, BatchNormalization, LeakyReLU
 
-# Model 1
-def model_1(input_data, metric):
-    '''return a model based on the input_data size (i.e. nb of features)
-       metric: 'mean_absolute_error' OR 'mean_square_error'
-    '''
-    # instantiate 
-    model = Sequential()
-
-    # input Layer
-    model.add(Dense(128, kernel_initializer='normal',input_dim = input_data.shape[1], activation='relu'))
+def train_model(model, train_input, train_target, mini_batch_size, monitor_loss=False):
+    '''Train the model using Mini-batch SGD'''
     
-    # hidden layers
-    model.add(Dense(256, kernel_initializer='normal',activation='relu'))
-    model.add(Dense(256, kernel_initializer='normal',activation='relu'))
-    model.add(Dense(256, kernel_initializer='normal',activation='relu'))
-
-    # output Layer
-    model.add(Dense(1, kernel_initializer='normal',activation='linear'))
-
-    # compile the network
-    model.compile(loss=metric, optimizer='adam', metrics=[metric])
+    criterion = nn.MSELoss() #regression task
+    optimizer = optim.Adam(model.parameters(), lr = 1e-4) #1e-4 normalement
+    nb_epochs = 150
     
-    return model
-
-
-# Model 2
-def model_2(input_data, metric):
-    '''return a model based on the input_data size (i.e. nb of features)
-       metric: 'mean_absolute_error' OR 'mean_square_error'
-    '''
-    # instantiate 
-    model = Sequential()
-
-    # input Layer
-    model.add(Dense(128, kernel_initializer='normal',input_dim = input_data.shape[1], activation='relu'))
-    model.add(Dropout(0.2))
-    # hidden layers
-    model.add(Dense(256, kernel_initializer='normal',activation='relu'))
-    model.add(Dense(256, kernel_initializer='normal',activation='relu'))
-    model.add(Dense(256, kernel_initializer='normal',activation='relu'))
-
-    # output Layer
-    model.add(Dense(1, kernel_initializer='normal',activation='linear'))
-
-    # compile the network
-    model.compile(loss=metric, optimizer='adam', metrics=[metric])
+    # Monitor loss
+    losses = []
     
-    return model
-
-# Model 3
-def model_3(input_data, metric):
-    '''return a model based on the input_data size (i.e. nb of features)
-       metric: 'mean_absolute_error' OR 'mean_square_error'
-    '''
-    # instantiate 
-    model = Sequential()
-
-    # input Layer
-    model.add(Dense(128, kernel_initializer='normal',input_dim = input_data.shape[1], activation='relu'))
-   
-    # hidden layers
-    model.add(Dense(256, kernel_initializer='normal',activation='relu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(256, kernel_initializer='normal',activation='relu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(256, kernel_initializer='normal',activation='relu'))
-
-    # output Layer
-    model.add(Dense(1, kernel_initializer='normal',activation='linear'))
-
-    # compile the network
-    model.compile(loss=metric, optimizer='adam', metrics=[metric])
+    for e in range(nb_epochs):
+        sum_loss = 0
+        for b in range(0, train_input.size(0), mini_batch_size):
+            output = model(train_input.narrow(0, b, min(mini_batch_size, train_input.shape[0]-b)))
+            loss = criterion(output, train_target.narrow(0, b, min(mini_batch_size, train_input.shape[0]-b)))
+            model.zero_grad()
+            loss.backward()
+            
+            sum_loss += loss.item() #compute loss for each mini batch for 1 epoch
+            
+            optimizer.step()
+        
+        # Monitor loss
+        losses.append(sum_loss)
+        
+        print('[epoch {:d}] loss: {:0.2f}'.format(e+1, sum_loss))
     
-    return model
-
-# Model 4
-def model_4(input_data, metric):
-    '''return a model based on the input_data size (i.e. nb of features)
-       metric: 'mean_absolute_error' OR 'mean_square_error'
-    '''
-    # instantiate 
-    model = Sequential()
-
-    # input Layer
-    model.add(Dense(128, kernel_initializer='normal',input_dim = input_data.shape[1], activation='relu'))
-
-    # hidden layers
-    model.add(Dense(256, kernel_initializer='normal',activation='relu'))
-    model.add(Dense(256, kernel_initializer='normal',activation='relu'))
-    model.add(Dense(256, kernel_initializer='normal',activation='relu'))
-    model.add(Dropout(0.2))
+    if monitor_loss:
+        return losses
     
-    # output Layer
-    model.add(Dense(1, kernel_initializer='normal',activation='linear'))
-
-    # compile the network
-    model.compile(loss=metric, optimizer='adam', metrics=[metric])
     
-    return model
+def compute_pred(model, data_input):
+    '''Given a trained model, output the prediction corresponding to data_input'''
+    y_hat = model(data_input)
+    return y_hat
 
-# Shallower networks
-# Model 5
-def model_5(input_data, metric):
-    '''return a model based on the input_data size (i.e. nb of features)
-       metric: 'mean_absolute_error' OR 'mean_square_error'
-    '''
-    # instantiate 
-    model = Sequential()
+def compute_score(y_actual, y_pred):
+    mse = mean_squared_error(y_actual, y_pred)
+    mae = mean_absolute_error(y_actual, y_pred)
+    r2 = r2_score(y_actual, y_pred)
+    #print("Obtained MSE on test set %2.2f " % mse)
+    #print("Obtained MAE on test set %2.2f " % mae)
+    return mse, mae, r2
 
-    # input Layer
-    model.add(Dense(50, kernel_initializer='normal',input_dim = input_data.shape[1], activation='relu')) # test with 50 or 100 here
-
-    # output Layer
-    model.add(Dense(1, kernel_initializer='normal',activation='relu')) 
-
-    # compile the network
-    model.compile(loss=metric, optimizer='adam', metrics=[metric])
-
-    return model
-
-# Model 6
-def model_6(input_data, metric):
-    model = Sequential()
-    model.add(Dense(100, input_dim=input_data.shape[1], kernel_initializer="uniform")) #best with 50: 2.03 #40: 1.81 #30:1.88
-    model.add(Activation('relu'))
-    model.add(Dense(1, kernel_initializer="uniform"))
-    model.add(Activation('relu'))
+#Architecture 1
+class Net1(nn.Module):
+    def __init__(self, n):
+        super(Net, self).__init__()
+        self.fc1 = nn.Linear(n,101)
+        self.fc2 = nn.Linear(100,1)
+    def forward(self,x):
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        return x
     
-    adam_opt = Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, amsgrad=False)
-    model.compile(loss='mean_absolute_error', optimizer=adam_opt)
+#Architecture 2
+class Net_2(nn.Module):
+    def __init__(self, n):
+        super(Net_2, self).__init__()
+        self.fc1 = nn.Linear(n,100)
+        self.fc2 = nn.Linear(100,1)
+        self.dropout = nn.Dropout(p=0.2)
+    def forward(self,x):
+        x = F.relu(self.fc1(x))
+        x = self.dropout(x)
+        x = F.relu(self.fc2(x))
+        return x
+
+#Architecture 3
+class Net_3(nn.Module):
+    def __init__(self, n):
+        super(Net_3, self).__init__()
+        self.fc1 = nn.Linear(n,100)
+        self.fc2 = nn.Linear(100,1)
+    def forward(self,x):
+        x = F.leaky_relu(self.fc1(x))
+        x = F.leaky_relu(self.fc2(x))
+        return x
+
+# Architecture 4
+class Net_4(nn.Module):
+    def __init__(self, n):
+        super(Net_4, self).__init__()
+        self.fc1 = nn.Linear(n,100)
+        self.fc2 = nn.Linear(100,50)
+        self.fc3 = nn.Linear(50,50)
+        self.fc4 = nn.Linear(50,1)
+        self.dropout = nn.Dropout(p=0.5)
+    def forward(self,x):
+        x = F.leaky_relu(self.fc1(x))
+        x = F.leaky_relu(self.fc2(x))
+        x = F.leaky_relu(self.fc3(x))
+        x = F.leaky_relu(self.fc4(x))
+        return x
     
-    return model
-
-# Model 7
-def model_7(input_data, metric):
-    model = Sequential()
-    model.add(Dense(100, input_dim=input_data.shape[1], kernel_initializer="uniform")) #best with 50: 2.03 #40: 1.81 #30:1.88
-    model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(1, kernel_initializer="uniform"))
-    model.add(Activation('relu'))
-
-    adam_opt = Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, amsgrad=False)
-    model.compile(loss='mean_absolute_error', optimizer=adam_opt)
-    
-    return model
-
-# Model 8
-def model_8(input_data, metric):
-    model = Sequential()
-    model.add(Dense(100, input_dim=input_data.shape[1], kernel_initializer="uniform")) #best with 50: 2.03 #40: 1.81 #30:1.88
-    #model.add(Activation('relu'))
-    model.add(LeakyReLU(alpha=0.2))
-    model.add(Dense(1, kernel_initializer="uniform"))
-    #model.add(Activation('relu'))
-    model.add(LeakyReLU(alpha=0.2))
-    
-    adam_opt = Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, amsgrad=False)
-    model.compile(loss='mean_absolute_error', optimizer=adam_opt)
-    
-    return model
-
-
-
-
-# Model X
-#def keras_model_3(input_data):
-#    model = Sequential()
-
-    # we can think of this chunk as the input layer
-#    model.add(Dense(100, input_dim=input_data.shape[1], kernel_initializer="uniform")) #best with 50: 2.03 #40: 1.81 #30:1.88
-#    model.add(BatchNormalization())
-#    model.add(Activation('relu'))
-#    model.add(Dropout(0.2)) #best with .2
-
-    # we can think of this chunk as the hidden layer    
-    #model.add(Dense(50, kernel_initializer="uniform"))
-    #model.add(BatchNormalization())
-    #model.add(Activation('relu'))
-    #model.add(Dropout(0.5))
-
-    # we can think of this chunk as the output layer
-#    model.add(Dense(1, kernel_initializer="uniform"))
-    #model.add(BatchNormalization())
-#    model.add(Activation('relu'))
-
-    # setting up the optimization of our weights 
-    #sgd = SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True) # 100 hidden neurons does not work. Try with 100 BUT with Adam
-#    adam= Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, amsgrad=False)
-#    model.compile(loss='mean_absolute_error', optimizer=adam)
-    
-#    return model
+#Architecture 5
+class Net_5(nn.Module):
+    def __init__(self, n):
+        super(Net_5, self).__init__()
+        self.fc1 = nn.Linear(n,100)
+        self.fc2 = nn.Linear(100,50)
+        self.fc3 = nn.Linear(50,50)
+        self.fc4 = nn.Linear(50,50)
+        self.fc5 = nn.Linear(50,1)
+    def forward(self,x):
+        x = F.leaky_relu(self.fc1(x))
+        x = F.leaky_relu(self.fc2(x))
+        x = F.leaky_relu(self.fc3(x))
+        x = F.leaky_relu(self.fc4(x))
+        x = F.leaky_relu(self.fc5(x))
+        return x
