@@ -17,6 +17,10 @@ def load_data(n_samples, tot_data_x, tot_data_y):
 def load_data_train_test(n_samples, tot_data_x, tot_data_y, iqr=False):
     data_X, data_y = load_data(n_samples, tot_data_x, tot_data_y, iqr=iqr)
     X_train, X_test, y_train, y_test = train_test_split(data_X, data_y, test_size = 0.2)
+
+    if iqr:
+        X_train, y_train = remove_outliers(X_train, y_train)
+
     return X_train, X_test, y_train, y_test
 
 

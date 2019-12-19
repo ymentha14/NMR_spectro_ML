@@ -49,8 +49,7 @@ def compute_score(y_actual, y_pred):
     mse = mean_squared_error(y_actual, y_pred)
     mae = mean_absolute_error(y_actual, y_pred)
     r2 = r2_score(y_actual, y_pred)
-    #print("Obtained MSE on test set %2.2f " % mse)
-    #print("Obtained MAE on test set %2.2f " % mae)
+    
     return mse, mae, r2
 
 #Architecture 1
