@@ -1,0 +1,5 @@
+{
+    "mae": 1.820320648650569,
+    "mse": 5.280181745812884,
+    "r2": 0.40409571286350787
+}["MinMaxScaler(copy=True, feature_range=(0, 1))", "SelectKBest(k=5000, score_func=<function f_regression at 0x1a1d9acb90>)", "PCA(copy=True, iterated_power='auto', n_components=3, random_state=None,\n    svd_solver='auto', tol=0.0, whiten=False)", "Ridge(alpha=100.0, copy_X=True, fit_intercept=True, max_iter=None,\n      normalize=False, random_state=None, solver='auto', tol=0.001)"]
